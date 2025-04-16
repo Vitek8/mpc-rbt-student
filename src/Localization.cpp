@@ -20,7 +20,7 @@ LocalizationNode::LocalizationNode() :
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     x = 0;
     y = 2.5;
-    theta = 0;
+    theta = M_PI;
     RCLCPP_INFO(get_logger(), "Localization node started.");
 }
 
@@ -43,7 +43,7 @@ void LocalizationNode::updateOdometry(double left_wheel_vel, double right_wheel_
     double wheel_base = 2*robot_config::HALF_DISTANCE_BETWEEN_WHEELS;
 
     double linear_velocity = (left_wheel_vel + right_wheel_vel) / 2.0;
-    double angular_velocity = (right_wheel_vel - left_wheel_vel) / wheel_base;
+    double angular_velocity = (-right_wheel_vel + left_wheel_vel) / wheel_base;
 
     theta += angular_velocity * dt;
     theta = std::atan2(std::sin(theta), std::cos(theta));

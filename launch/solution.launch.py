@@ -9,13 +9,13 @@ from ament_index_python import get_package_share_directory
 def generate_launch_description():
     rviz_config_path = "/home/vitek/Projects/workspace/src/mpc-rbt-student/rviz/config.rviz"
     return LaunchDescription([
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory("mpc_rbt_simulator"),
-                             "launch/simulation.launch.py"
-                             )
-            )
-        ),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(
+        #         os.path.join(get_package_share_directory("mpc_rbt_simulator"),
+        #                      "launch/simulation.launch.py"
+        #                      )
+        #     )
+        # ),
         Node(
             name="rviz2",
             package="rviz2",
