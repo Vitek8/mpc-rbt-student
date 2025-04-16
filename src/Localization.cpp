@@ -19,7 +19,7 @@ LocalizationNode::LocalizationNode() :
     // tf_briadcaster 
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     x = 0;
-    y = 0;
+    y = 2.5;
     theta = 0;
     RCLCPP_INFO(get_logger(), "Localization node started.");
 }
@@ -29,8 +29,8 @@ void LocalizationNode::jointCallback(const sensor_msgs::msg::JointState & msg) {
     double dt = (current_time - last_time_).seconds();
     last_time_ = current_time;
 
-    double left_wheel_vel = msg.velocity[0];
-    double right_wheel_vel = msg.velocity[1];
+    double left_wheel_vel = msg.velocity[0]/10.0;
+    double right_wheel_vel = msg.velocity[1]/10.0;
 
     updateOdometry(left_wheel_vel, right_wheel_vel, dt);
 
@@ -40,7 +40,7 @@ void LocalizationNode::jointCallback(const sensor_msgs::msg::JointState & msg) {
 }
 
 void LocalizationNode::updateOdometry(double left_wheel_vel, double right_wheel_vel, double dt) {
-    double wheel_base = robot_config::HALF_DISTANCE_BETWEEN_WHEELS;
+    double wheel_base = 2*robot_config::HALF_DISTANCE_BETWEEN_WHEELS;
 
     double linear_velocity = (left_wheel_vel + right_wheel_vel) / 2.0;
     double angular_velocity = (right_wheel_vel - left_wheel_vel) / wheel_base;
@@ -60,8 +60,8 @@ void LocalizationNode::updateOdometry(double left_wheel_vel, double right_wheel_
     odometry_.pose.pose.orientation = tf2::toMsg(q);
 
     odometry_.twist.twist.linear.x = linear_velocity;
-    odometry_.twist.twist.linear.y = linear_velocity;
-    odometry_.twist.twist.angular.x = angular_velocity;
+    odometry_.twist.twist.linear.y = 0;
+    odometry_.twist.twist.angular.z = angular_velocity;
 }
 
 void LocalizationNode::publishOdometry() {

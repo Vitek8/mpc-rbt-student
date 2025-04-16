@@ -31,9 +31,9 @@ private:
 
     nav_msgs::msg::Odometry odometry_;
     rclcpp::Time last_time_;
-    float x;
-    float y;
-    float theta;
+    double x;
+    double y;
+    double theta;
 };
 
 #endif // LOCALIZATION_HPP
