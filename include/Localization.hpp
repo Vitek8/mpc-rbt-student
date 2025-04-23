@@ -31,6 +31,8 @@ private:
 
     nav_msgs::msg::Odometry odometry_;
     rclcpp::Time last_time_;
+    tf2::Quaternion q;
+
     double x;
     double y;
     double theta;

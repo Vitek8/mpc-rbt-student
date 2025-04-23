@@ -21,6 +21,7 @@ LocalizationNode::LocalizationNode() :
     x = 0;
     y = 2.5;
     theta = M_PI;
+    q.setRPY(0, 0, 0);
     RCLCPP_INFO(get_logger(), "Localization node started.");
 }
 
@@ -29,8 +30,8 @@ void LocalizationNode::jointCallback(const sensor_msgs::msg::JointState & msg) {
     double dt = (current_time - last_time_).seconds();
     last_time_ = current_time;
 
-    double left_wheel_vel = msg.velocity[0]/10.0;
-    double right_wheel_vel = msg.velocity[1]/10.0;
+    double right_wheel_vel = msg.velocity[0]/10.0;
+    double left_wheel_vel = msg.velocity[1]/10.0;
 
     updateOdometry(left_wheel_vel, right_wheel_vel, dt);
 
@@ -43,7 +44,7 @@ void LocalizationNode::updateOdometry(double left_wheel_vel, double right_wheel_
     double wheel_base = 2*robot_config::HALF_DISTANCE_BETWEEN_WHEELS;
 
     double linear_velocity = (left_wheel_vel + right_wheel_vel) / 2.0;
-    double angular_velocity = (-right_wheel_vel + left_wheel_vel) / wheel_base;
+    double angular_velocity = (right_wheel_vel - left_wheel_vel) / wheel_base;
 
     theta += angular_velocity * dt;
     theta = std::atan2(std::sin(theta), std::cos(theta));
@@ -55,8 +56,8 @@ void LocalizationNode::updateOdometry(double left_wheel_vel, double right_wheel_
     odometry_.pose.pose.position.x = x;
     odometry_.pose.pose.position.y = y;
 
-    tf2::Quaternion q;
     q.setRPY(0, 0, theta);
+    q.normalize();
     odometry_.pose.pose.orientation = tf2::toMsg(q);
 
     odometry_.twist.twist.linear.x = linear_velocity;
@@ -77,9 +78,6 @@ void LocalizationNode::publishTransform() {
     t.transform.translation.x = x;
     t.transform.translation.y = y;
     t.transform.translation.z = 0.0;
-
-    tf2::Quaternion q;
-    q.setRPY(0, 0, theta);
     t.transform.rotation = tf2::toMsg(q);
 
     // Broadcast the transform
