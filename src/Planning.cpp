@@ -49,6 +49,7 @@ void PlanningNode::planPath(const std::shared_ptr<nav_msgs::srv::GetPlan::Reques
     aStar(request->start, request->goal);
     smoothPath();
     path_pub_->publish(path_);
+	response->plan = path_;
 }
 
 /*void PlanningNode::dilateMap() {
@@ -70,9 +71,8 @@ void PlanningNode::dilateMap() {
     nav_msgs::msg::OccupancyGrid dilatedMap = map_;
     int width = map_.info.width;
     int height = map_.info.height;
-    float resolution = map_.info.resolution;
 
-    int dilation_radius = 5;
+    int dilation_radius = 4;
 
     auto isInBounds = [width, height](int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
